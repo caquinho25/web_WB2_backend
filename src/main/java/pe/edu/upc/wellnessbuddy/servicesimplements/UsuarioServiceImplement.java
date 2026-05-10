@@ -1,6 +1,7 @@
 package pe.edu.upc.wellnessbuddy.servicesimplements;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pe.edu.upc.wellnessbuddy.entities.Usuario;
 import pe.edu.upc.wellnessbuddy.repositories.IUsuarioRepository;
@@ -14,6 +15,9 @@ public class UsuarioServiceImplement implements IUsuarioService {
     @Autowired
     private IUsuarioRepository uR;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public List<Usuario> list() {
         return uR.findAll();
@@ -21,7 +25,11 @@ public class UsuarioServiceImplement implements IUsuarioService {
 
     @Override
     public void insert(Usuario u) {
+        String passwordBcrypt =
+                passwordEncoder.encode(u.getPassword());
+        u.setPassword(passwordBcrypt);
         uR.save(u);
+        uR.insRol("USER", u.getIdUsuario());
     }
 
     @Override
@@ -38,4 +46,10 @@ public class UsuarioServiceImplement implements IUsuarioService {
     public void delete(int id) {
         uR.deleteById(id);
     }
+
+    @Override
+    public void insertRole(String rol, int idUsuario) {
+        uR.insRol(rol, idUsuario);
+    }
+
 }

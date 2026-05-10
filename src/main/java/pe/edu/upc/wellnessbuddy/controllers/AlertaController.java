@@ -3,6 +3,7 @@ package pe.edu.upc.wellnessbuddy.controllers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.wellnessbuddy.dtos.AlertaDTO;
 import pe.edu.upc.wellnessbuddy.entities.Alerta;
@@ -20,6 +21,7 @@ public class AlertaController {
     private IAlertaService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public List<AlertaDTO> listar() {
         return service.list().stream().map(x -> new ModelMapper().map(x, AlertaDTO.class))
                 .collect(Collectors.toList());
@@ -39,6 +41,7 @@ public class AlertaController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> modificar(@RequestBody AlertaDTO dto) {
         Alerta a = new ModelMapper().map(dto, Alerta.class);
 
@@ -50,6 +53,7 @@ public class AlertaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> eliminar(@PathVariable int id) {
         if (service.listId(id) == null)
             return ResponseEntity.notFound().build();
