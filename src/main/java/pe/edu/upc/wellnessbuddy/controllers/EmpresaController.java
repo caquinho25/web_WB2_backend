@@ -3,6 +3,7 @@ package pe.edu.upc.wellnessbuddy.controllers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.wellnessbuddy.dtos.EmpresaDTO;
 import pe.edu.upc.wellnessbuddy.entities.Empresa;
@@ -19,6 +20,7 @@ public class EmpresaController {
     private IEmpresaService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public List<EmpresaDTO> listar() {
         return service.list().stream().map(x -> {
             ModelMapper m = new ModelMapper();
@@ -27,6 +29,7 @@ public class EmpresaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void registrar(@RequestBody EmpresaDTO dto) {
         ModelMapper m = new ModelMapper();
         Empresa e = m.map(dto, Empresa.class);
@@ -43,6 +46,7 @@ public class EmpresaController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> modificar(@RequestBody EmpresaDTO dto) {
         ModelMapper m = new ModelMapper();
         Empresa e = m.map(dto, Empresa.class);
@@ -55,6 +59,7 @@ public class EmpresaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> eliminar(@PathVariable int id) {
         if (service.listId(id) == null)
             return ResponseEntity.notFound().build();

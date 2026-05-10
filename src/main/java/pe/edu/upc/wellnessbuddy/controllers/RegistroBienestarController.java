@@ -3,6 +3,7 @@ package pe.edu.upc.wellnessbuddy.controllers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.wellnessbuddy.dtos.RegistroBienestarDTO;
 import pe.edu.upc.wellnessbuddy.entities.RegistroBienestar;
@@ -19,6 +20,7 @@ public class RegistroBienestarController {
     private IRegistroBienestarService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public List<RegistroBienestarDTO> listar() {
         return service.list().stream().map(x -> {
             ModelMapper m = new ModelMapper();
@@ -27,6 +29,7 @@ public class RegistroBienestarController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('USER')")
     public void registrar(@RequestBody RegistroBienestarDTO dto) {
         ModelMapper m = new ModelMapper();
         RegistroBienestar r = m.map(dto, RegistroBienestar.class);
@@ -34,6 +37,7 @@ public class RegistroBienestarController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<RegistroBienestarDTO> listarId(@PathVariable int id) {
         RegistroBienestar r = service.listId(id);
         if (r == null) return ResponseEntity.notFound().build();
@@ -43,6 +47,7 @@ public class RegistroBienestarController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<String> modificar(@RequestBody RegistroBienestarDTO dto) {
         ModelMapper m = new ModelMapper();
         RegistroBienestar r = m.map(dto, RegistroBienestar.class);
@@ -55,6 +60,7 @@ public class RegistroBienestarController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> eliminar(@PathVariable int id) {
         if (service.listId(id) == null)
             return ResponseEntity.notFound().build();

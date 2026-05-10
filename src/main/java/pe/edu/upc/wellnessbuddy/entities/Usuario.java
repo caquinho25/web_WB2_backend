@@ -2,9 +2,12 @@ package pe.edu.upc.wellnessbuddy.entities;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+import java.util.List;
+
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,18 +27,22 @@ public class Usuario {
 
     @Column(name = "status_usuario", nullable = false)
     private Boolean statusUsuario;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_usuario")
+    private List<Role> roles;
 
 
     public Usuario() {
     }
 
-    public Usuario(int idUsuario, String nombre, String email, String username, String password, Boolean statusUsuario) {
+    public Usuario(int idUsuario, String nombre, String email, String username, String password, Boolean statusUsuario, List<Role> roles) {
         this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.email = email;
         this.username = username;
         this.password = password;
         this.statusUsuario = statusUsuario;
+        this.roles = roles;
     }
 
     public int getIdUsuario() {
@@ -84,5 +91,13 @@ public class Usuario {
 
     public void setStatusUsuario(Boolean statusUsuario) {
         this.statusUsuario = statusUsuario;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

@@ -3,6 +3,7 @@ package pe.edu.upc.wellnessbuddy.controllers;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.wellnessbuddy.dtos.RecomendacionDTO;
 import pe.edu.upc.wellnessbuddy.entities.Recomendacion;
@@ -19,12 +20,14 @@ public class RecomendacionController {
     private IRecomendacionService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public List<RecomendacionDTO> listar() {
         return service.list().stream().map(x -> new ModelMapper().map(x, RecomendacionDTO.class))
                 .collect(Collectors.toList());
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public void registrar(@RequestBody RecomendacionDTO dto) {
         ModelMapper m = new ModelMapper();
         Recomendacion r = m.map(dto, Recomendacion.class);
@@ -32,6 +35,7 @@ public class RecomendacionController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<RecomendacionDTO> listarId(@PathVariable int id) {
         Recomendacion r = service.listId(id);
         if (r == null) return ResponseEntity.notFound().build();
@@ -40,6 +44,7 @@ public class RecomendacionController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<String> modificar(@RequestBody RecomendacionDTO dto) {
         Recomendacion r = new ModelMapper().map(dto, Recomendacion.class);
 
@@ -51,6 +56,7 @@ public class RecomendacionController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> eliminar(@PathVariable int id) {
         if (service.listId(id) == null)
             return ResponseEntity.notFound().build();
