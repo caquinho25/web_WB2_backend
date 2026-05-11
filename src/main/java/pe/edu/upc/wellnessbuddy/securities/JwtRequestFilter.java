@@ -36,34 +36,36 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        // JWT Token is in the form "Bearer token"
-        if (requestTokenHeader != null &&
-                requestTokenHeader.startsWith("Bearer ")) {
+        // Si no hay token o no inicia con Bearer
+        if (requestTokenHeader == null ||
+                !requestTokenHeader.startsWith("Bearer ")) {
 
-            jwtToken = requestTokenHeader.substring(7);
-
-            try {
-
-                username =
-                        jwtTokenUtil.getUsernameFromToken(jwtToken);
-
-            } catch (IllegalArgumentException e) {
-
-                System.out.println("No se puede encontrar el token JWT");
-
-            } catch (ExpiredJwtException e) {
-
-                System.out.println("Token JWT ha expirado");
-            }
-
-        } else {
-
-            logger.warn("JWT Token no inicia con la palabra Bearer");
-
-            System.out.println(requestTokenHeader);
+            chain.doFilter(request, response);
+            return;
         }
 
-        // Once we get the token validate it.
+        // Obtener token sin "Bearer "
+        jwtToken = requestTokenHeader.substring(7);
+
+        try {
+
+            username =
+                    jwtTokenUtil.getUsernameFromToken(jwtToken);
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println("No se puede encontrar el token JWT");
+
+        } catch (ExpiredJwtException e) {
+
+            System.out.println("Token JWT ha expirado");
+
+        } catch (Exception e) {
+
+            System.out.println("Token JWT inválido");
+        }
+
+        // Validar token
         if (username != null &&
                 SecurityContextHolder.getContext().getAuthentication() == null) {
 
