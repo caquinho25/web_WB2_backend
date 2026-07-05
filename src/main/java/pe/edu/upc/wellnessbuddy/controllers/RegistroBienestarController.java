@@ -4,9 +4,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.wellnessbuddy.dtos.RegistroBienestarDTO;
+import pe.edu.upc.wellnessbuddy.entities.Empleado;
 import pe.edu.upc.wellnessbuddy.entities.RegistroBienestar;
+import pe.edu.upc.wellnessbuddy.servicesinterfaces.IEmpleadoService;
 import pe.edu.upc.wellnessbuddy.servicesinterfaces.IRegistroBienestarService;
 
 import java.util.List;
@@ -18,6 +21,9 @@ public class RegistroBienestarController {
 
     @Autowired
     private IRegistroBienestarService service;
+
+    @Autowired
+    private IEmpleadoService empleadoService;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
@@ -67,5 +73,17 @@ public class RegistroBienestarController {
 
         service.delete(id);
         return ResponseEntity.ok("Registro eliminado");
+    }
+
+    @GetMapping("/mis-registros")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    public List<RegistroBienestarDTO> misRegistros() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Empleado empleado = empleadoService.buscarPorUsername(username);
+        if (empleado == null) return List.of();
+
+        return service.listarPorEmpleado(empleado.getIdEmpleado()).stream()
+                .map(x -> new ModelMapper().map(x, RegistroBienestarDTO.class))
+                .collect(Collectors.toList());
     }
 }

@@ -38,4 +38,9 @@ public class RecomendacionServiceImplement implements IRecomendacionService {
     public void delete(int id) {
         rR.deleteById(id);
     }
+
+    @Override
+    public List<Recomendacion> listarPorEmpleado(int idEmpleado) {
+        return rR.buscarPorEmpleado(idEmpleado);
+    }
 }

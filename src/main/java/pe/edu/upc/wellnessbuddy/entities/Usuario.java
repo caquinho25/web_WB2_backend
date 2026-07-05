@@ -1,5 +1,6 @@
 package pe.edu.upc.wellnessbuddy.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class Usuario implements Serializable {
     private String username;
 
     @Column(name = "password", length = 255, nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(name = "status_usuario", nullable = false)

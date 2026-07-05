@@ -11,11 +11,12 @@ import java.util.List;
 @Repository
 public interface IAlertaRepository extends JpaRepository<Alerta, Integer> {
 
-    // alertas por tipo
     @Query("SELECT a FROM Alerta a WHERE a.tipo = :tipo")
     List<Alerta> buscarPorTipo(@Param("tipo") String tipo);
 
-    // alertas por registro
     @Query("SELECT a FROM Alerta a WHERE a.registro.idRegistro = :idRegistro")
     List<Alerta> buscarPorRegistro(@Param("idRegistro") int idRegistro);
+
+    @Query("SELECT a FROM Alerta a WHERE a.registro.empleado.idEmpleado = :idEmpleado")
+    List<Alerta> buscarPorEmpleado(@Param("idEmpleado") int idEmpleado);
 }

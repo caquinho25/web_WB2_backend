@@ -10,4 +10,5 @@ public interface IEvaluacionService {
     public Evaluacion listId(int id);
     public void update(Evaluacion e);
     public void delete(int id);
+    public List<Evaluacion> listarPorEmpleado(int idEmpleado);
 }

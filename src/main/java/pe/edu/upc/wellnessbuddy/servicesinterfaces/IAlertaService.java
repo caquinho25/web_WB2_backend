@@ -10,4 +10,5 @@ public interface IAlertaService {
     public Alerta listId(int id);
     public void update(Alerta a);
     public void delete(int id);
+    public List<Alerta> listarPorEmpleado(int idEmpleado);
 }
