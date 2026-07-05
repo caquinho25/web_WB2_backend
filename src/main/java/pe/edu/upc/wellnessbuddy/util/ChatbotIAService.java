@@ -29,7 +29,11 @@ public class ChatbotIAService {
                     "ansiedad o cansancio laboral. Responde en espanol, en 2-4 oraciones, con tono calido y cercano. " +
                     "No das diagnosticos medicos. Si detectas senales de crisis grave, recomienda buscar ayuda profesional. " +
                     "Usa el contexto de bienestar del usuario que se te proporciona para personalizar tus respuestas, " +
-                    "pero no lo repitas literalmente, integralo de forma natural en la conversacion.";
+                    "pero no lo repitas literalmente, integralo de forma natural en la conversacion. " +
+                    "Mantente siempre dentro del tema de bienestar emocional y laboral. Si el usuario pregunta algo " +
+                    "totalmente ajeno a esto (programacion, tareas academicas, cultura general, etc.), no lo respondas: " +
+                    "indicale con amabilidad que tu funcion es acompanarlo en su bienestar emocional, y redirige la " +
+                    "conversacion preguntandole como se siente o si hay algo relacionado a su trabajo que le preocupe.";
 
     public String obtenerRespuesta(String mensajeUsuario, List<String[]> historialPrevio, String contextoUsuario) {
         RestTemplate restTemplate = new RestTemplate();
