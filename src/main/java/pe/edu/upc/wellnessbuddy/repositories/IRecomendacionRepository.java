@@ -12,11 +12,12 @@ import java.util.List;
 @Repository
 public interface IRecomendacionRepository extends JpaRepository<Recomendacion, Integer> {
 
-    //  por registro
     @Query("SELECT r FROM Recomendacion r WHERE r.registro.idRegistro = :idRegistro")
     List<Recomendacion> buscarPorRegistro(@Param("idRegistro") int idRegistro);
 
-    // por fecha
     @Query("SELECT r FROM Recomendacion r WHERE r.fecha = :fecha")
     List<Recomendacion> buscarPorFecha(@Param("fecha") LocalDate fecha);
+
+    @Query("SELECT r FROM Recomendacion r WHERE r.registro.empleado.idEmpleado = :idEmpleado")
+    List<Recomendacion> buscarPorEmpleado(@Param("idEmpleado") int idEmpleado);
 }

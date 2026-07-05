@@ -38,4 +38,9 @@ public class AlertaServiceImplement implements IAlertaService {
     public void delete(int id) {
         aR.deleteById(id);
     }
+
+    @Override
+    public List<Alerta> listarPorEmpleado(int idEmpleado) {
+        return aR.buscarPorEmpleado(idEmpleado);
+    }
 }

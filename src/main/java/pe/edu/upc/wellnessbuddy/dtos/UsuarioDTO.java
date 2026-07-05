@@ -1,5 +1,9 @@
 package pe.edu.upc.wellnessbuddy.dtos;
 
+import pe.edu.upc.wellnessbuddy.entities.Role;
+
+import java.util.List;
+
 public class UsuarioDTO {
 
     private int idUsuario;
@@ -8,6 +12,7 @@ public class UsuarioDTO {
     private String username;
     private String password;
     private Boolean statusUsuario;
+    private List<Role> roles;
 
     public UsuarioDTO() {}
 
@@ -57,5 +62,13 @@ public class UsuarioDTO {
 
     public void setStatusUsuario(Boolean statusUsuario) {
         this.statusUsuario = statusUsuario;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

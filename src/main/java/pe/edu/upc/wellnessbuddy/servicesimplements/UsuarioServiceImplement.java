@@ -52,4 +52,9 @@ public class UsuarioServiceImplement implements IUsuarioService {
         uR.insRol(rol, idUsuario);
     }
 
+    @Override
+    public Usuario buscarPorUsername(String username) {
+        return uR.findOneByUsername(username);
+    }
+
 }

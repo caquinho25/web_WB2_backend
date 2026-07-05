@@ -10,4 +10,5 @@ public interface IEmpleadoService {
     public Empleado listId(int id);
     public void update(Empleado e);
     public void delete(int id);
+    public Empleado buscarPorUsername(String username);
 }

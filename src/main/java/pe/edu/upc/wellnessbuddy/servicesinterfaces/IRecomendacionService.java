@@ -10,4 +10,5 @@ public interface IRecomendacionService {
     public Recomendacion listId(int id);
     public void update(Recomendacion r);
     public void delete(int id);
+    public List<Recomendacion> listarPorEmpleado(int idEmpleado);
 }

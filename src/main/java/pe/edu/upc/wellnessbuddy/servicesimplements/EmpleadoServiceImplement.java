@@ -38,4 +38,9 @@ public class EmpleadoServiceImplement implements IEmpleadoService {
     public void delete(int id) {
         eR.deleteById(id);
     }
+
+    @Override
+    public Empleado buscarPorUsername(String username) {
+        return eR.buscarPorUsername(username);
+    }
 }

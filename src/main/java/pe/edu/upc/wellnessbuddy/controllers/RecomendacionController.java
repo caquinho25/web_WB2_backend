@@ -4,9 +4,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.wellnessbuddy.dtos.RecomendacionDTO;
+import pe.edu.upc.wellnessbuddy.entities.Empleado;
 import pe.edu.upc.wellnessbuddy.entities.Recomendacion;
+import pe.edu.upc.wellnessbuddy.servicesinterfaces.IEmpleadoService;
 import pe.edu.upc.wellnessbuddy.servicesinterfaces.IRecomendacionService;
 
 import java.util.List;
@@ -18,6 +21,9 @@ public class RecomendacionController {
 
     @Autowired
     private IRecomendacionService service;
+
+    @Autowired
+    private IEmpleadoService empleadoService;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
@@ -63,5 +69,17 @@ public class RecomendacionController {
 
         service.delete(id);
         return ResponseEntity.ok("Recomendación eliminada");
+    }
+
+    @GetMapping("/mis-recomendaciones")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    public List<RecomendacionDTO> misRecomendaciones() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Empleado empleado = empleadoService.buscarPorUsername(username);
+        if (empleado == null) return List.of();
+
+        return service.listarPorEmpleado(empleado.getIdEmpleado()).stream()
+                .map(x -> new ModelMapper().map(x, RecomendacionDTO.class))
+                .collect(Collectors.toList());
     }
 }

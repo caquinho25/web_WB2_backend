@@ -11,4 +11,5 @@ public interface IUsuarioService {
     public void update(Usuario u);
     public void delete(int id);
     public void insertRole(String rol, int idUsuario);
+    public Usuario buscarPorUsername(String username);
 }

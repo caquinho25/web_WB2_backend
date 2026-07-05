@@ -10,4 +10,5 @@ public interface IRegistroBienestarService {
     public RegistroBienestar listId(int id);
     public void update(RegistroBienestar r);
     public void delete(int id);
+    public List<RegistroBienestar> listarPorEmpleado(int idEmpleado);
 }

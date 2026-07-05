@@ -11,11 +11,12 @@ import java.util.List;
 @Repository
 public interface IEmpleadoRepository extends JpaRepository<Empleado, Integer> {
 
-    // empleados por empresa
     @Query("SELECT e FROM Empleado e WHERE e.empresa.idEmpresa = :idEmpresa")
     List<Empleado> buscarPorEmpresa(@Param("idEmpresa") int idEmpresa);
 
-    // empleados activos
     @Query("SELECT e FROM Empleado e WHERE e.estado = true")
     List<Empleado> empleadosActivos();
+
+    @Query("SELECT e FROM Empleado e WHERE e.usuario.username = :username")
+    Empleado buscarPorUsername(@Param("username") String username);
 }
