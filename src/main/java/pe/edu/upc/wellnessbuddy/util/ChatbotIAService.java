@@ -23,13 +23,15 @@ public class ChatbotIAService {
 
     private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 
-    private static final String SYSTEM_PROMPT =
+    private static final String SYSTEM_PROMPT_BASE =
             "Eres el asistente de bienestar emocional de WellnessBuddy. " +
                     "Tu rol es brindar apoyo emocional breve, empatico y practico a empleados que reportan estres, " +
                     "ansiedad o cansancio laboral. Responde en espanol, en 2-4 oraciones, con tono calido y cercano. " +
-                    "No das diagnosticos medicos. Si detectas senales de crisis grave, recomienda buscar ayuda profesional.";
+                    "No das diagnosticos medicos. Si detectas senales de crisis grave, recomienda buscar ayuda profesional. " +
+                    "Usa el contexto de bienestar del usuario que se te proporciona para personalizar tus respuestas, " +
+                    "pero no lo repitas literalmente, integralo de forma natural en la conversacion.";
 
-    public String obtenerRespuesta(String mensajeUsuario, List<String[]> historialPrevio) {
+    public String obtenerRespuesta(String mensajeUsuario, List<String[]> historialPrevio, String contextoUsuario) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -38,9 +40,14 @@ public class ChatbotIAService {
 
         List<Map<String, String>> mensajes = new ArrayList<>();
 
+        String systemPromptCompleto = SYSTEM_PROMPT_BASE;
+        if (contextoUsuario != null && !contextoUsuario.isBlank()) {
+            systemPromptCompleto += "\n\nContexto actual del empleado:\n" + contextoUsuario;
+        }
+
         Map<String, String> systemMsg = new HashMap<>();
         systemMsg.put("role", "system");
-        systemMsg.put("content", SYSTEM_PROMPT);
+        systemMsg.put("content", systemPromptCompleto);
         mensajes.add(systemMsg);
 
         if (historialPrevio != null) {
@@ -79,6 +86,7 @@ public class ChatbotIAService {
 
             return mensajeRespuesta.get("content").trim();
         } catch (Exception e) {
+            e.printStackTrace();
             return "Lo siento, no puedo responder en este momento. Intenta de nuevo en unos segundos.";
         }
     }

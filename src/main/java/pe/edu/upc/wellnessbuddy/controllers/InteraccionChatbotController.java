@@ -8,10 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.wellnessbuddy.dtos.ChatMensajeDTO;
 import pe.edu.upc.wellnessbuddy.dtos.InteraccionChatbotDTO;
-import pe.edu.upc.wellnessbuddy.entities.InteraccionChatbot;
-import pe.edu.upc.wellnessbuddy.entities.Usuario;
-import pe.edu.upc.wellnessbuddy.servicesinterfaces.IInteraccionChatbotService;
-import pe.edu.upc.wellnessbuddy.servicesinterfaces.IUsuarioService;
+import pe.edu.upc.wellnessbuddy.entities.*;
+import pe.edu.upc.wellnessbuddy.servicesinterfaces.*;
 import pe.edu.upc.wellnessbuddy.util.ChatbotIAService;
 
 import java.time.LocalDate;
@@ -28,6 +26,21 @@ public class InteraccionChatbotController {
 
     @Autowired
     private IUsuarioService usuarioService;
+
+    @Autowired
+    private IEmpleadoService empleadoService;
+
+    @Autowired
+    private IRegistroBienestarService registroService;
+
+    @Autowired
+    private IAlertaService alertaService;
+
+    @Autowired
+    private IRecomendacionService recomendacionService;
+
+    @Autowired
+    private IEvaluacionService evaluacionService;
 
     @Autowired
     private ChatbotIAService chatbotIAService;
@@ -73,7 +86,7 @@ public class InteraccionChatbotController {
         return ResponseEntity.ok("Interaccion eliminada");
     }
 
-    // ===== NUEVO: chat en vivo =====
+    // ===== chat en vivo =====
 
     @GetMapping("/mis-conversaciones")
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
@@ -103,7 +116,9 @@ public class InteraccionChatbotController {
             contexto.add(new String[]{h.getMensajeUsuario(), h.getRespuestaBot()});
         }
 
-        String respuestaBot = chatbotIAService.obtenerRespuesta(dto.getMensaje(), contexto);
+        String contextoUsuario = construirContextoBienestar(username);
+
+        String respuestaBot = chatbotIAService.obtenerRespuesta(dto.getMensaje(), contexto, contextoUsuario);
 
         InteraccionChatbot nueva = new InteraccionChatbot();
         nueva.setUsuario(usuario);
@@ -115,5 +130,49 @@ public class InteraccionChatbotController {
 
         ModelMapper m = new ModelMapper();
         return ResponseEntity.ok(m.map(nueva, InteraccionChatbotDTO.class));
+    }
+
+    private String construirContextoBienestar(String username) {
+        Empleado empleado = empleadoService.buscarPorUsername(username);
+        if (empleado == null) {
+            return "El usuario aun no ha completado su perfil laboral, por lo que no tiene registros de bienestar.";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        List<RegistroBienestar> registros = registroService.listarPorEmpleado(empleado.getIdEmpleado());
+        if (!registros.isEmpty()) {
+            RegistroBienestar ultimo = registros.get(registros.size() - 1);
+            sb.append("- Ultimo registro de bienestar (").append(ultimo.getFecha()).append("): ")
+                    .append("nivel de estres ").append(ultimo.getNivelEstres()).append("/10, ")
+                    .append("estado de animo: ").append(ultimo.getEstadoAnimo()).append(".\n");
+        } else {
+            sb.append("- El usuario todavia no tiene registros de bienestar.\n");
+        }
+
+        List<Alerta> alertas = alertaService.listarPorEmpleado(empleado.getIdEmpleado());
+        if (!alertas.isEmpty()) {
+            Alerta ultimaAlerta = alertas.get(alertas.size() - 1);
+            sb.append("- Tiene ").append(alertas.size()).append(" alerta(s) generada(s). ")
+                    .append("La mas reciente: \"").append(ultimaAlerta.getMensaje()).append("\".\n");
+        }
+
+        List<Recomendacion> recomendaciones = recomendacionService.listarPorEmpleado(empleado.getIdEmpleado());
+        if (!recomendaciones.isEmpty()) {
+            Recomendacion ultimaRecomendacion = recomendaciones.get(recomendaciones.size() - 1);
+            sb.append("- Ultima recomendacion recibida: \"").append(ultimaRecomendacion.getDescripcion()).append("\".\n");
+        }
+
+        List<Evaluacion> evaluaciones = evaluacionService.listarPorEmpleado(empleado.getIdEmpleado());
+        if (!evaluaciones.isEmpty()) {
+            Evaluacion ultimaEvaluacion = evaluaciones.get(evaluaciones.size() - 1);
+            sb.append("- Ultima autoevaluacion: pregunta \"").append(ultimaEvaluacion.getPregunta())
+                    .append("\", respuesta \"").append(ultimaEvaluacion.getRespuesta()).append("\".\n");
+        }
+
+        sb.append("- Cargo: ").append(empleado.getCargo()).append(", empresa: ")
+                .append(empleado.getEmpresa().getNombre()).append(".");
+
+        return sb.toString();
     }
 }
