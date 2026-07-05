@@ -10,4 +10,5 @@ public interface IInteraccionChatbotService {
     public InteraccionChatbot listId(int id);
     public void update(InteraccionChatbot i);
     public void delete(int id);
+    public List<InteraccionChatbot> listarPorUsername(String username);
 }

@@ -19,4 +19,8 @@ public interface IInteraccionChatbotRepository extends JpaRepository<Interaccion
     //por fecha
     @Query("SELECT c FROM InteraccionChatbot c WHERE c.fecha = :fecha")
     List<InteraccionChatbot> buscarPorFecha(@Param("fecha") LocalDate fecha);
+
+    // por username (para el chat en vivo)
+    @Query("SELECT c FROM InteraccionChatbot c WHERE c.usuario.username = :username ORDER BY c.idInteraccion ASC")
+    List<InteraccionChatbot> buscarPorUsername(@Param("username") String username);
 }

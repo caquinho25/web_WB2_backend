@@ -38,4 +38,9 @@ public class InteraccionChatbotServiceImplement implements IInteraccionChatbotSe
     public void delete(int id) {
         iR.deleteById(id);
     }
+
+    @Override
+    public List<InteraccionChatbot> listarPorUsername(String username) {
+        return iR.buscarPorUsername(username);
+    }
 }
